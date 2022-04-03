@@ -1,4 +1,4 @@
-/* File: system.cpp
+/* File: userInterface.cpp
  * Author: Nick Gkloumpos
 */
 
@@ -6,14 +6,14 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <esp_system.h>
-#include <system.hh>
 #include <esp_log.h>
+#include <UserInterface.hh>
 
-extern "C" void systemTask(void * parameter) {
+extern "C" void UITask(void * parameter) {
 
-    ESP_LOGI(TAG_System, "System task initiated");
+    ESP_LOGI(TAG_Gui, "Gui task initialized");
 
-    // Main system loop
+    // User Interface loop
     while (1) {
         vTaskDelay(10);
     }

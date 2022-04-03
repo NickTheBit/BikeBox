@@ -6,6 +6,8 @@
 
 #include <system.hh>
 
+static const char* TAG_Main = "Main";
+
 extern "C" void app_main(void) {
 
     /* Main is to initiate three tasks
@@ -14,8 +16,9 @@ extern "C" void app_main(void) {
      * 3. Recorder task, highest priority responsible for talking to the sensors and storing the data.
      */
 
-    TaskHandle_t systemHandle;
+    ESP_LOGI(TAG_Main, "Main process started");
 
+    TaskHandle_t systemHandle;
     xTaskCreate( systemTask, "System", 2048, nullptr, tskIDLE_PRIORITY , &systemHandle);
 
 }

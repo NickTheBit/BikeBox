@@ -1,4 +1,4 @@
-/* File: system.cpp
+/* File: recorder.cpp
  * Author: Nick Gkloumpos
 */
 
@@ -6,12 +6,12 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <esp_system.h>
-#include <system.hh>
+#include <recorder.hh>
 #include <esp_log.h>
 
-extern "C" void systemTask(void * parameter) {
+extern "C" void recorderTask(void * parameter) {
 
-    ESP_LOGI(TAG_System, "System task initiated");
+    ESP_LOGI(TAG_Recorder, "Recording task initiated");
 
     // Main system loop
     while (1) {

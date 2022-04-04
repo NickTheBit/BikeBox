@@ -6,3 +6,7 @@ cmake_minimum_required(VERSION 3.5)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(BikeBox)
+
+idf_build_set_property(COMPILE_OPTIONS "LV_CONF_INCLUDE_SIMPLE Inc/lv_config.h" APPEND)
+
+include_directories("Libs/TFT_eSPI")

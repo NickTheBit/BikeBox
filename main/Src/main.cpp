@@ -5,6 +5,8 @@
 #include <esp_log.h>
 
 #include <system.hh>
+#include <UserInterface.hh>
+#include <recorder.hh>
 
 static const char* TAG_Main = "Main";
 
@@ -19,6 +21,10 @@ extern "C" void app_main(void) {
     ESP_LOGI(TAG_Main, "Main process started");
 
     TaskHandle_t systemHandle;
-    xTaskCreate( systemTask, "System", 2048, nullptr, tskIDLE_PRIORITY , &systemHandle);
+    TaskHandle_t recorderHandle;
+    TaskHandle_t UIHandle;
 
+    xTaskCreate( systemTask, "System", 2048, nullptr, tskIDLE_PRIORITY , &systemHandle);
+    xTaskCreate( UITask, "UserInterface", 2048, nullptr, tskIDLE_PRIORITY, &UIHandle);
+    xTaskCreate( recorderTask, "Recorder", 2048, nullptr, tskIDLE_PRIORITY, &recorderHandle);
 }

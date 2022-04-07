@@ -10,7 +10,7 @@
 #include <lvgl.h>
 
 extern "C" void recorderTask(void * parameter) {
-	
+
     ESP_LOGI(TAG_Recorder, "Recording task initiated");
 
     lv_init();

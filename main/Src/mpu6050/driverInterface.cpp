@@ -32,7 +32,6 @@ uint8_t ESP32_I2C_IF::ReadRegister(uint8_t slaveAddress, uint8_t regAddress, i2c
 	uint8_t readBuffer;
 	esp_err_t err = i2c_master_read_from_device(I2C_Master_Port, slaveAddress, &readBuffer, sizeof(uint8_t), I2C_Timeout_ms);
 
-	// todo: This is probably overkill
 	switch (err) {
 		case ESP_OK:
 			*status = I2C_STATUS_SUCCESS;

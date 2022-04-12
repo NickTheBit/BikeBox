@@ -53,8 +53,7 @@ namespace MPU6050_Driver {
     * @param  none
     * @retval i2c_status_t
     */
-  i2c_status_t MPU6050::WakeUpSensor(void)
-  {
+  i2c_status_t MPU6050::WakeUpSensor(void) {
     return i2c->WriteRegisterBit(MPU6050_ADDRESS, Sensor_Regs::PWR_MGMT_1, Regbits_PWR_MGMT_1::BIT_SLEEP, false);
   }
 
@@ -67,8 +66,7 @@ namespace MPU6050_Driver {
     * @param  none
     * @retval i2c_status_t
     */
-  i2c_status_t MPU6050::ResetSensor(void)
-  {
+  i2c_status_t MPU6050::ResetSensor(void) {
     return i2c->WriteRegisterBit(MPU6050_ADDRESS, Sensor_Regs::PWR_MGMT_1, Regbits_PWR_MGMT_1::BIT_DEVICE_RESET, true);
   }
 
@@ -78,8 +76,7 @@ namespace MPU6050_Driver {
     * @param  gyroScale Gyroscope scale value to be set
     * @retval i2c_status_t
     */
-  i2c_status_t MPU6050::SetGyroFullScale(Gyro_FS_t gyroScale)
-  {
+  i2c_status_t MPU6050::SetGyroFullScale(Gyro_FS_t gyroScale) {
     return i2c->WriteRegister(MPU6050_ADDRESS, Sensor_Regs::GYRO_CONFIG, ((uint8_t)gyroScale << 3));
   }
 
@@ -90,8 +87,7 @@ namespace MPU6050_Driver {
     * @param  error Result of the sensor reading process
     * @retval gyro_full_scale_range_t
     */
-  Gyro_FS_t MPU6050::GetGyroFullScale(i2c_status_t *error)
-  {
+  Gyro_FS_t MPU6050::GetGyroFullScale(i2c_status_t *error) {
     uint8_t gyroConfig = i2c->ReadRegister(MPU6050_ADDRESS, Sensor_Regs::GYRO_CONFIG, error);
     return (Gyro_FS_t)((gyroConfig >> 3) & 0x03);
   }

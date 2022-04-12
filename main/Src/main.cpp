@@ -25,4 +25,6 @@ extern "C" void app_main(void) {
     xTaskCreate( systemTask, "System", 2048, nullptr, tskIDLE_PRIORITY , &systemHandle);
     xTaskCreate( UITask, "UserInterface", 2048, nullptr, tskIDLE_PRIORITY, &UIHandle);
     xTaskCreate( recorderTask, "Recorder", 2048, nullptr, tskIDLE_PRIORITY, &recorderHandle);
+
+	ESP_LOGI(TAG_Main, "Tasks Created successfully.");
 }

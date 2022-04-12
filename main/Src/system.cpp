@@ -15,6 +15,6 @@ extern "C" void systemTask(void * parameter) {
 
     // Main system loop
     while (1) {
-        vTaskDelay(10);
+	    vTaskDelay(10 / portTICK_PERIOD_MS);
     }
 }

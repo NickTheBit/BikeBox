@@ -13,9 +13,9 @@ extern "C" void UITask(void * parameter) {
 
     ESP_LOGI(TAG_Gui, "Gui task initialized");
 
-    // User Interface loop
+    // User Interface main loop
     while (1) {
 
-        vTaskDelay(10);
+        vTaskDelay(1050 / portTICK_PERIOD_MS);
     }
 }

@@ -1,15 +1,12 @@
-set(Sources "")
+set(Modules "")
 
-list(APPEND Sources Src/main.cpp)
-list(APPEND Sources Src/system.cpp)
-list(APPEND Sources Src/userInterface.cpp)
-list(APPEND Sources Src/recorder.cpp)
-list(APPEND Sources Src/mpu6050/i2c_interface.cpp)
-list(APPEND Sources Src/mpu6050/mpu6050.cpp)
-list(APPEND Sources Src/mpu6050/driverInterface.cpp)
-list(APPEND Sources Src/SensorInterface/sensorInterface.cpp)
+list(APPEND Modules .)
+list(APPEND Modules mpu6050)
+list(APPEND Modules Recorder)
+list(APPEND Modules System)
+list(APPEND Modules UserInterface)
 
-idf_component_register(SRCS ${Sources}
-                    INCLUDE_DIRS ".")
-
-include_directories("Inc")
+idf_component_register(
+    INCLUDE_DIRS ${Modules}
+    SRC_DIRS ${Modules}
+)

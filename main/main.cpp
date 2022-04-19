@@ -3,7 +3,7 @@
 #include <esp_log.h>
 
 #include <system.hh>
-#include <UserInterface.hh>
+#include <userInterface.hh>
 #include <recorder.hh>
 
 static const char* TAG_Main = "Main";

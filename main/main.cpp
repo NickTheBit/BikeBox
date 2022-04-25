@@ -2,9 +2,9 @@
 #include <freertos/task.h>
 #include <esp_log.h>
 
-#include <system.hh>
-#include <userInterface.hh>
-#include <recorder.hh>
+#include "System/system.hh"
+#include "UserInterface/userInterface.hh"
+#include "Recorder/recorder.hh"
 
 static const char* TAG_Main = "Main";
 

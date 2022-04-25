@@ -6,12 +6,12 @@
 #include <freertos/task.h>
 #include "freertos/queue.h"
 
-#include <recorder.hh>
+#include "recorder.hh"
 #include <esp_log.h>
 #include "driver/i2c.h"
 #include "driver/gpio.h"
 
-#include <mpu6050/driverInterface.h>
+#include <driverInterface.h>
 #include <mpu6050.h>
 
 // Queue for sensor read events.
@@ -200,7 +200,7 @@ extern "C" void recorderTask(void * parameter) {
 
 }
 
-static void Configure_GPIO_Interrupt(void)
+void Configure_GPIO_Interrupt(void)
 {
 	gpio_config_t io_conf = {};
 	//interrupt of rising edge
@@ -217,7 +217,7 @@ static void Configure_GPIO_Interrupt(void)
 	//install gpio isr service
 	gpio_install_isr_service(0);
 	//hook isr handler for specific gpio pin
-	gpio_isr_handler_add(MPUInterruptPin, gpio_isr_handler, (void*) MPUInterruptPin);
+//	gpio_isr_handler_add(MPUInterruptPin, gpio_isr_handler, MPUInterruptPin);
 }
 
 

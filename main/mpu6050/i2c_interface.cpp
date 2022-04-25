@@ -6,7 +6,7 @@
   * @brief   This file constains I2C Interface class implementation.
   ******************************************************************************
   */
-#include "mpu6050/i2c_interface.h"
+#include "i2c_interface.h"
 
 /**
   * @brief  This method will be used for reading a bit value of the given register

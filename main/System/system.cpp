@@ -6,7 +6,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <esp_system.h>
-#include <system.hh>
+#include "system.hh"
 #include <esp_log.h>
 
 extern "C" void systemTask(void * parameter) {

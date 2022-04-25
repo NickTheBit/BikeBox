@@ -6,7 +6,7 @@
   * @brief   This file constains MPU6050 driver implementation.
   ******************************************************************************
   */
-#include "mpu6050/mpu6050.h"
+#include "mpu6050.h"
 
 namespace MPU6050_Driver {
 

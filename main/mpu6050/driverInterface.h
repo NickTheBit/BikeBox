@@ -62,6 +62,7 @@ private:
 		.scl_io_num = I2C_MASTER_SCL_IO,         // select GPIO specific to your project
 		.sda_pullup_en = GPIO_PULLUP_ENABLE,
 		.scl_pullup_en = GPIO_PULLUP_ENABLE,
+        .clk_flags = 0
 	};
 };
 

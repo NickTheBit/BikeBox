@@ -1,12 +1,15 @@
-set(Modules "")
 
-list(APPEND Modules .)
-list(APPEND Modules mpu6050)
-list(APPEND Modules Recorder)
-list(APPEND Modules System)
-list(APPEND Modules UserInterface)
+set(Sources "")
+list(APPEND Sources "main.cpp")
+
+set(SubDirs "")
+list(APPEND SubDirs ".")
+list(APPEND SubDirs "mpu6050")
+list(APPEND SubDirs "Recorder")
+list(APPEND SubDirs "System")
+list(APPEND SubDirs "UserInterface")
 
 idf_component_register(
-    INCLUDE_DIRS ${Modules}
-    SRC_DIRS ${Modules}
+        SRC_DIRS ${SubDirs}
+        INCLUDE_DIRS ${SubDirs}
 )

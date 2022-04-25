@@ -2,8 +2,8 @@
 // Created by nick on 09/04/2022.
 //
 
-#include <mpu6050/driverInterface.h>
-#include "mpu6050/i2c_interface.h"
+#include "driverInterface.h"
+#include "i2c_interface.h"
 
 /**
 * @brief  I2C peripheral initialization method.

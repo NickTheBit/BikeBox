@@ -26,7 +26,7 @@ extern "C" void recorderTask(void * parameter) {
 	I2C_Interface *i2c_if = new ESP32_I2C_IF();
 	/* initialize fast I2C 400 kHz */
 	if (i2c_if->Init_I2C(i2c_clockspeed_t::CLK_400KHz) != I2C_STATUS_SUCCESS) {
-		printf("I2C initialization failed!\n");
+		ESP_LOGE(TAG_Recorder,"I2C initialization failed!\n");
 		delete i2c_if;
 		esp_restart();
 	}
@@ -34,7 +34,7 @@ extern "C" void recorderTask(void * parameter) {
 	MPU6050_Driver::MPU6050 sensor(i2c_if);
 	if(sensor.ResetSensor() != I2C_STATUS_SUCCESS)
 	{
-		printf("Sensor reset failed!\n");
+		ESP_LOGE(TAG_Recorder,"Sensor reset failed!\n");
 		esp_restart();
 	}
 	/* Simple safety delay after sensor reset */
@@ -43,14 +43,14 @@ extern "C" void recorderTask(void * parameter) {
 	/* Wakeup sensor and set full scale ranges */
 	if(sensor.InitializeSensor(MPU6050_Driver::Gyro_FS_t::FS_1000_DPS, MPU6050_Driver::Accel_FS_t::FS_8G) != I2C_STATUS_SUCCESS)
 	{
-		printf("Sensor initialization failed!\n");
+		ESP_LOGE(TAG_Recorder,"Sensor initialization failed!\n");
 		esp_restart();
 	}
 
 	/* Auto-Calibrate gyroscope registers to target value 0 (default) */
 	if(sensor.Calibrate_Gyro_Registers() != I2C_STATUS_SUCCESS)
 	{
-		printf("Gyro calibration failed!\n");
+		ESP_LOGE(TAG_Recorder,"Gyro calibration failed!\n");
 		esp_restart();
 	}
 
@@ -58,52 +58,52 @@ extern "C" void recorderTask(void * parameter) {
      * X = 0 MG, Y = 0 MG, Z = 1 MG */
 	if(sensor.Calibrate_Accel_Registers() != I2C_STATUS_SUCCESS)
 	{
-		printf("Accel calibration failed!\n");
+		ESP_LOGE(TAG_Recorder,"Accel calibration failed!\n");
 		esp_restart();
 	}
 
 	/* set digital low pass to BW_184Hz (sample rate reduced to 1KHz)
      * (just to show the feature it already has default value in startup) */
 	if(sensor.SetSensor_DLPF_Config(MPU6050_Driver::DLPF_t::BW_184Hz) != I2C_STATUS_SUCCESS) {
-		printf("DLPF configuration failed!\n");
+		ESP_LOGE(TAG_Recorder,"DLPF configuration failed!\n");
 		esp_restart();
 	}
 
 	/* set sample rate divider for 20 Hz sample rate.
      * 1000 / (1 + 49) = 20 Hz */
 	if(sensor.SetGyro_SampleRateDivider(49) != I2C_STATUS_SUCCESS) {
-		printf("Sample rate config failed!\n");
+		ESP_LOGE(TAG_Recorder,"Sample rate config failed!\n");
 		esp_restart();
 	}
 
 	/* set sensor interrput coinfig to default value! */
 	if(sensor.SetSensor_InterruptPinConfig(0x00) != I2C_STATUS_SUCCESS) {
-		printf("Interrupt pin configuration failed!\n");
+		ESP_LOGE(TAG_Recorder,"Interrupt pin configuration failed!\n");
 		esp_restart();
 	}
 
 	/* Enable sensor data ready interrupt. */
 	uint8_t interruptConfigVal = MPU6050_Driver::Regbits_INT_ENABLE::BIT_DATA_RDY_EN;
 	if(sensor.SetSensor_InterruptEnable(interruptConfigVal) != I2C_STATUS_SUCCESS) {
-		printf("Interrput enable failed!\n");
+		ESP_LOGE(TAG_Recorder,"Interrput enable failed!\n");
 		esp_restart();
 	}
 
 	/* Make sure sensor fifo is disabledbefore reseting the buffer. */
 	if(sensor.SetSensor_FIFO_Enable(false) != I2C_STATUS_SUCCESS) {
-		printf("Sensor fifo enable failed!\n");
+		ESP_LOGE(TAG_Recorder,"Sensor fifo enable failed!\n");
 		esp_restart();
 	}
 
 	/* Reset sensro fifo buffer. */
 	if(sensor.Reset_Sensor_FIFO() != I2C_STATUS_SUCCESS) {
-		printf("Sensor fifo reset failed!\n");
+		ESP_LOGE(TAG_Recorder,"Sensor fifo reset failed!\n");
 		esp_restart();
 	}
 
 	/* Enable sensor fifo. */
 	if(sensor.SetSensor_FIFO_Enable(true) != I2C_STATUS_SUCCESS) {
-		printf("Sensor fifo enable failed!\n");
+		ESP_LOGE(TAG_Recorder,"Sensor fifo enable failed!\n");
 		esp_restart();
 	}
 
@@ -115,19 +115,19 @@ extern "C" void recorderTask(void * parameter) {
 			MPU6050_Driver::Regbits_FIFO_EN::BIT_YG_FIFO_EN |
 			MPU6050_Driver::Regbits_FIFO_EN::BIT_ZG_FIFO_EN;
 	if(sensor.SetSensor_FIFO_Config(fifoConfigVal) != I2C_STATUS_SUCCESS) {
-		printf("Sensor fifo congfiguration failed!\n");
+		ESP_LOGE(TAG_Recorder,"Sensor fifo congfiguration failed!\n");
 		esp_restart();
 	}
 
 	i2c_status_t error = I2C_STATUS_NONE;
 	float currentSampleRateHz = sensor.GetSensor_CurrentSampleRate_Hz(&error);
 	if(error != I2C_STATUS_SUCCESS) {
-		printf("Sample rate reading failed!\n");
+		ESP_LOGE(TAG_Recorder,"Sample rate reading failed!\n");
 		esp_restart();
 	}
 
-	printf("Sensor sample rate: %.2f Hz \n", currentSampleRateHz);
-	printf("Sensor configuration completed!\n");
+	ESP_LOGI(TAG_Recorder,"Sensor sample rate: %.2f Hz \n", currentSampleRateHz);
+	ESP_LOGI(TAG_Recorder,"Sensor configuration completed!\n");
 
 	uint8_t intStatus = 0;
 	uint16_t fifoCount = 0;
@@ -144,20 +144,20 @@ extern "C" void recorderTask(void * parameter) {
 			intStatus = sensor.GetSensor_InterruptStatus(&error);
 
 			if(error != I2C_STATUS_SUCCESS) {
-				printf("Interrupt status read failed!\n");
+				ESP_LOGE(TAG_Recorder,"Interrupt status read failed!\n");
 				break;
 			}
 
 			/* Check if there is any overflow. If yes then abort! */
 			if(intStatus & MPU6050_Driver::Regbits_INT_ENABLE::BIT_FIFO_OFLOW_EN) {
-				printf("FIFO overflow detected!\n");
+				ESP_LOGE(TAG_Recorder,"FIFO overflow detected!\n");
 				break;
 			}
 
 			fifoCount = sensor.GetSensor_FIFOCount(&error);
 
 			if(error != I2C_STATUS_SUCCESS) {
-				printf("FIFO count read failed!\n");
+				ESP_LOGE(TAG_Recorder,"FIFO count read failed!\n");
 				break;
 			}
 
@@ -173,7 +173,7 @@ extern "C" void recorderTask(void * parameter) {
 			}
 
 			if(error != I2C_STATUS_SUCCESS) {
-				printf("FIFO data read failed!\n");
+				ESP_LOGE(TAG_Recorder,"FIFO data read failed!\n");
 				break;
 			}
 
@@ -186,7 +186,7 @@ extern "C" void recorderTask(void * parameter) {
 			currentFrame.gz = (int16_t)fifoData[10] << 8 | (int16_t)fifoData[11];
 
 			/* print the constructed sensor FIFO data! */
-			printf("aX: %d aY: %d aZ: %d gX: %d gY: %d gZ: %d\n",
+			ESP_LOGI(TAG_Recorder,"aX: %d aY: %d aZ: %d gX: %d gY: %d gZ: %d\n",
 				   currentFrame.ax,
 				   currentFrame.ay,
 				   currentFrame.az,

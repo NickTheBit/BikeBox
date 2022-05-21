@@ -8,14 +8,13 @@
 
 #include "recorder.hh"
 #include <esp_log.h>
-#include "driver/i2c.h"
 #include "driver/gpio.h"
 
 #include <driverInterface.h>
 #include <mpu6050.h>
 
 // Queue for sensor read events.
-static xQueueHandle qSensorReadEvent = NULL;
+static xQueueHandle qSensorReadEvent = nullptr;
 
 static const gpio_num_t MPUInterruptPin = GPIO_NUM_18;
 
@@ -76,7 +75,7 @@ extern "C" void recorderTask(void * parameter) {
 		esp_restart();
 	}
 
-	/* set sensor interrput coinfig to default value! */
+	/* set sensor interrupt config to default value! */
 	if(sensor.SetSensor_InterruptPinConfig(0x00) != I2C_STATUS_SUCCESS) {
 		ESP_LOGE(TAG_Recorder,"Interrupt pin configuration failed!\n");
 		esp_restart();
@@ -194,6 +193,8 @@ extern "C" void recorderTask(void * parameter) {
 				   currentFrame.gy,
 				   currentFrame.gz);
 		}
+
+		vTaskDelay(20);
 	}
 
 	esp_restart();
@@ -217,6 +218,7 @@ void Configure_GPIO_Interrupt(void)
 	//install gpio isr service
 	gpio_install_isr_service(0);
 	//hook isr handler for specific gpio pin
+	//todo enable handler once required functions are up.
 //	gpio_isr_handler_add(MPUInterruptPin, gpio_isr_handler, MPUInterruptPin);
 }
 

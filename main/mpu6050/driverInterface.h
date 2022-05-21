@@ -6,12 +6,10 @@
   * @brief   This file constains the imlementation I2C interface for esp32-wroom microcontroller.
   ******************************************************************************
   */
+#pragma once
 
 #include "i2c_interface.h"
 #include <driver/i2c.h>
-
-#ifndef ESP32_I2C_IF_H
-#define ESP32_I2C_IF_H
 
 #define I2C_MASTER_SDA_IO 22
 #define I2C_MASTER_SCL_IO 21
@@ -62,8 +60,5 @@ private:
 		.scl_io_num = I2C_MASTER_SCL_IO,         // select GPIO specific to your project
 		.sda_pullup_en = GPIO_PULLUP_ENABLE,
 		.scl_pullup_en = GPIO_PULLUP_ENABLE,
-        .clk_flags = 0
 	};
 };
-
-#endif

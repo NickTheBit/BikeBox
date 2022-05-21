@@ -7,8 +7,7 @@
   ******************************************************************************
   */
 
-#ifndef MPU6050_H
-#define MPU6050_H
+#pragma once
 
 #include "i2c_interface.h"
 
@@ -581,5 +580,3 @@ namespace MPU6050_Driver {
   };
 
 } // namespace MPU6050_Driver
-
-#endif /* include guard */

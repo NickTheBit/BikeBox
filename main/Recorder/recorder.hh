@@ -1,6 +1,7 @@
 /* File: recorder.hh
  * Author: Nick Gkloumpos
 */
+#pragma once
 
 static const char* TAG_Recorder = "Recorder";
 

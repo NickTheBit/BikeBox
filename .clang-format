@@ -1,0 +1,26 @@
+  ﻿---
+  AlignAfterOpenBracket: Align
+  AlignEscapedNewlines: Left
+  AlignOperands: 'true'
+  AlignTrailingComments: true
+  AllowShortBlocksOnASingleLine: Always
+  AllowShortCaseLabelsOnASingleLine: true
+  AllowShortFunctionsOnASingleLine: All
+  CompactNamespaces: false
+  ConstructorInitializerIndentWidth: 4
+  ContinuationIndentWidth: 4
+  Cpp11BracedListStyle: true
+  DerivePointerAlignment: true
+  IncludeBlocks: Regroup
+  IndentCaseLabels: false
+  IndentPPDirectives: None
+  IndentWidth: 4
+  Language: Cpp
+  PointerAlignment: Middle
+  ReflowComments: true
+  TabWidth: 4
+  UseTab: ForContinuationAndIndentation
+  BreakBeforeBraces: Attach
+
+
+  ...

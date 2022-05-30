@@ -16,7 +16,7 @@
 // Queue for sensor read events.
 static xQueueHandle qSensorReadEvent = nullptr;
 
-static const gpio_num_t MPUInterruptPin = GPIO_NUM_18;
+static const gpio_num_t MPUInterruptPin = GPIO_NUM_17;
 
 extern "C" void recorderTask(void * parameter) {
 	ESP_LOGI(TAG_Recorder, "Recording task initiated");
@@ -31,8 +31,7 @@ extern "C" void recorderTask(void * parameter) {
 	}
 
 	MPU6050_Driver::MPU6050 sensor(i2c_if);
-	if(sensor.ResetSensor() != I2C_STATUS_SUCCESS)
-	{
+	if(sensor.ResetSensor() != I2C_STATUS_SUCCESS ) {
 		ESP_LOGE(TAG_Recorder,"Sensor reset failed!\n");
 		esp_restart();
 	}
@@ -83,25 +82,25 @@ extern "C" void recorderTask(void * parameter) {
 
 	/* Enable sensor data ready interrupt. */
 	uint8_t interruptConfigVal = MPU6050_Driver::Regbits_INT_ENABLE::BIT_DATA_RDY_EN;
-	if(sensor.SetSensor_InterruptEnable(interruptConfigVal) != I2C_STATUS_SUCCESS) {
+	if (sensor.SetSensor_InterruptEnable(interruptConfigVal) != I2C_STATUS_SUCCESS) {
 		ESP_LOGE(TAG_Recorder,"Interrput enable failed!\n");
 		esp_restart();
 	}
 
 	/* Make sure sensor fifo is disabledbefore reseting the buffer. */
-	if(sensor.SetSensor_FIFO_Enable(false) != I2C_STATUS_SUCCESS) {
+	if (sensor.SetSensor_FIFO_Enable(false) != I2C_STATUS_SUCCESS) {
 		ESP_LOGE(TAG_Recorder,"Sensor fifo enable failed!\n");
 		esp_restart();
 	}
 
 	/* Reset sensro fifo buffer. */
-	if(sensor.Reset_Sensor_FIFO() != I2C_STATUS_SUCCESS) {
+	if (sensor.Reset_Sensor_FIFO() != I2C_STATUS_SUCCESS) {
 		ESP_LOGE(TAG_Recorder,"Sensor fifo reset failed!\n");
 		esp_restart();
 	}
 
 	/* Enable sensor fifo. */
-	if(sensor.SetSensor_FIFO_Enable(true) != I2C_STATUS_SUCCESS) {
+	if (sensor.SetSensor_FIFO_Enable(true) != I2C_STATUS_SUCCESS) {
 		ESP_LOGE(TAG_Recorder,"Sensor fifo enable failed!\n");
 		esp_restart();
 	}
@@ -113,14 +112,14 @@ extern "C" void recorderTask(void * parameter) {
 			MPU6050_Driver::Regbits_FIFO_EN::BIT_XG_FIFO_EN |
 			MPU6050_Driver::Regbits_FIFO_EN::BIT_YG_FIFO_EN |
 			MPU6050_Driver::Regbits_FIFO_EN::BIT_ZG_FIFO_EN;
-	if(sensor.SetSensor_FIFO_Config(fifoConfigVal) != I2C_STATUS_SUCCESS) {
+	if (sensor.SetSensor_FIFO_Config(fifoConfigVal) != I2C_STATUS_SUCCESS) {
 		ESP_LOGE(TAG_Recorder,"Sensor fifo congfiguration failed!\n");
 		esp_restart();
 	}
 
 	i2c_status_t error = I2C_STATUS_NONE;
 	float currentSampleRateHz = sensor.GetSensor_CurrentSampleRate_Hz(&error);
-	if(error != I2C_STATUS_SUCCESS) {
+	if (error != I2C_STATUS_SUCCESS) {
 		ESP_LOGE(TAG_Recorder,"Sample rate reading failed!\n");
 		esp_restart();
 	}
@@ -135,8 +134,7 @@ extern "C" void recorderTask(void * parameter) {
 	constexpr uint16_t FIFO_FRAME_LEN = 12;
 
 	uint8_t qData;
-	while (error == I2C_STATUS_SUCCESS)
-	{
+	while (error == I2C_STATUS_SUCCESS) {
 		/* read sensor FIFO buffer on every data ready interrupt */
 		if (xQueueReceive(qSensorReadEvent, &qData, portMAX_DELAY) == pdPASS)
 		{
@@ -155,23 +153,23 @@ extern "C" void recorderTask(void * parameter) {
 
 			fifoCount = sensor.GetSensor_FIFOCount(&error);
 
-			if(error != I2C_STATUS_SUCCESS) {
+			if (error != I2C_STATUS_SUCCESS) {
 				ESP_LOGE(TAG_Recorder,"FIFO count read failed!\n");
 				break;
 			}
 
 			/* If sensor fifo count is smaller than our frame size or if the data ready bit is not set,
              * do not execute the further sequence where we read and process FIFO data. */
-			if(fifoCount < FIFO_FRAME_LEN || !(intStatus & MPU6050_Driver::Regbits_INT_ENABLE::BIT_DATA_RDY_EN)) {
+			if (fifoCount < FIFO_FRAME_LEN || !(intStatus & MPU6050_Driver::Regbits_INT_ENABLE::BIT_DATA_RDY_EN)) {
 				continue;
 			}
 
 			/* Read sensor frame amount of bytes (12 bytes) from FIFO buffer. */
-			for(uint8_t i = 0; i < FIFO_FRAME_LEN && (error == I2C_STATUS_SUCCESS); i++) {
+			for (uint8_t i = 0; i < FIFO_FRAME_LEN && (error == I2C_STATUS_SUCCESS); i++) {
 				fifoData[i] = sensor.GetSensor_FIFO_Data(&error);
 			}
 
-			if(error != I2C_STATUS_SUCCESS) {
+			if (error != I2C_STATUS_SUCCESS) {
 				ESP_LOGE(TAG_Recorder,"FIFO data read failed!\n");
 				break;
 			}
@@ -201,8 +199,7 @@ extern "C" void recorderTask(void * parameter) {
 
 }
 
-void Configure_GPIO_Interrupt(void)
-{
+void Configure_GPIO_Interrupt(void) {
 	gpio_config_t io_conf = {};
 	//interrupt of rising edge
 	io_conf.intr_type = GPIO_INTR_POSEDGE;
@@ -218,23 +215,23 @@ void Configure_GPIO_Interrupt(void)
 	//install gpio isr service
 	gpio_install_isr_service(0);
 	//hook isr handler for specific gpio pin
-	//todo enable handler once required functions are up.
-//	gpio_isr_handler_add(MPUInterruptPin, gpio_isr_handler, MPUInterruptPin);
+
+	//todo verify casting doesn't cause problems
+	gpio_isr_handler_add((gpio_num_t) MPUInterruptPin,(gpio_isr_t) gpio_isr_handler,(void *) MPUInterruptPin);
 }
 
 
 /**
  * @brief Interrupt service routine for external pin interrupt (GPIO_NUM_18). Sensor is
- * configured to generate raising edge interrupt on every data ready event. Sensor INT pin is
+ * configured to generate raising edgegpio_isr_handler_add interrupt on every data ready event. Sensor INT pin is
  * connected to the GPIO_NUM18 pin. Every time we get positive edge interrupt we send sensor
  * read event message to sensor read task via qSensorReadEvent queue.
  * @param arg void argpointer to be casted to desired parameter
  * @retval none
  */
-void IRAM_ATTR gpio_isr_handler(uint32_t arg)
-{
+void IRAM_ATTR gpio_isr_handler(uint32_t arg) {
 	uint32_t gpio_num = arg;
-	if(gpio_num == MPUInterruptPin) {
+	if (gpio_num == MPUInterruptPin) {
 		uint8_t qSignal = 1; // dummy signal value for the queue
 		xQueueSendFromISR(qSensorReadEvent, &qSignal, NULL);
 	}

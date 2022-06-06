@@ -3,8 +3,6 @@
 */
 #pragma once
 
-static const char* TAG_Recorder = "Recorder";
-
 /* structure to keep latest accelerometer/positional sensor data */
 struct SensorFrame {
     int16_t ax;
@@ -16,5 +14,5 @@ struct SensorFrame {
 };
 
 extern "C" void recorderTask(void *);
-static void Configure_GPIO_Interrupt(void);
+void Configure_GPIO_Interrupt(void);
 void IRAM_ATTR gpio_isr_handler(uint32_t arg);

@@ -3,6 +3,4 @@
 */
 #pragma once
 
-static const char* TAG_Gui = "GUI";
-
 extern "C" void UITask(void *);

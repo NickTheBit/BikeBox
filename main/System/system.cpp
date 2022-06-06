@@ -9,6 +9,8 @@
 #include "system.hh"
 #include <esp_log.h>
 
+static const char* TAG_System = "System";
+
 extern "C" void systemTask(void * parameter) {
 
     ESP_LOGI(TAG_System, "System task initiated");

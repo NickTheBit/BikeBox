@@ -9,6 +9,8 @@
 
 #include "userInterface.hh"
 
+static const char* TAG_Gui = "GUI";
+
 extern "C" void UITask(void * parameter) {
 
     ESP_LOGI(TAG_Gui, "Gui task initialized");

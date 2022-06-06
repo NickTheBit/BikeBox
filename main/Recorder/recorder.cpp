@@ -13,8 +13,11 @@
 #include <driverInterface.h>
 #include <mpu6050.h>
 
+// Tag for logger
+static const char* TAG_Recorder = "Recorder";
+
 // Queue for sensor read events.
-static xQueueHandle qSensorReadEvent = nullptr;
+extern xQueueHandle qSensorReadEvent;
 
 static const gpio_num_t MPUInterruptPin = GPIO_NUM_17;
 
@@ -54,8 +57,7 @@ extern "C" void recorderTask(void * parameter) {
 
 	/* Auto-Calibrate accelerometer registers to target values by default:
      * X = 0 MG, Y = 0 MG, Z = 1 MG */
-	if(sensor.Calibrate_Accel_Registers() != I2C_STATUS_SUCCESS)
-	{
+	if(sensor.Calibrate_Accel_Registers() != I2C_STATUS_SUCCESS) {
 		ESP_LOGE(TAG_Recorder,"Accel calibration failed!\n");
 		esp_restart();
 	}
@@ -191,8 +193,6 @@ extern "C" void recorderTask(void * parameter) {
 				   currentFrame.gy,
 				   currentFrame.gz);
 		}
-
-		vTaskDelay(20);
 	}
 
 	esp_restart();
@@ -216,7 +216,7 @@ void Configure_GPIO_Interrupt(void) {
 	gpio_install_isr_service(0);
 	//hook isr handler for specific gpio pin
 
-	//todo verify casting doesn't cause problems
+	// todo verify casting doesn't cause problems
 	gpio_isr_handler_add((gpio_num_t) MPUInterruptPin,(gpio_isr_t) gpio_isr_handler,(void *) MPUInterruptPin);
 }
 
@@ -236,4 +236,5 @@ void IRAM_ATTR gpio_isr_handler(uint32_t arg) {
 		xQueueSendFromISR(qSensorReadEvent, &qSignal, NULL);
 	}
 }
+
 

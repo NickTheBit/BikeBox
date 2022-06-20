@@ -2,17 +2,13 @@
 #include <freertos/task.h>
 #include <esp_log.h>
 #include <esp_spi_flash.h>
-#include <hal/gpio_hal.h>
-#include <driver/gpio.h>
-#include <cstdint>
-#include <freertos/queue.h>
+#include <esp_chip_info.h>
 
 #include "System/system.hh"
 #include "UserInterface/userInterface.hh"
 #include "Recorder/recorder.hh"
 
 static const char* TAG_Main = "Main";
-QueueHandle_t qSensorReadEvent = NULL;
 
 extern "C" void app_main(void) {
 
@@ -37,10 +33,6 @@ extern "C" void app_main(void) {
 	       (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
 	ESP_LOGI(TAG_Main,"Minimum free heap size: %d bytes", esp_get_minimum_free_heap_size());
 
-	// todo: create a queue to handle gpio event from isr
-	// create a queue to handle gpio event from isr
-	qSensorReadEvent = xQueueCreate(10, sizeof(uint8_t));
-	Configure_GPIO_Interrupt();
 
     xTaskCreate( systemTask, "System", 2048, nullptr, tskIDLE_PRIORITY , nullptr);
     xTaskCreate( UITask, "UserInterface", 2048, nullptr, tskIDLE_PRIORITY, nullptr);

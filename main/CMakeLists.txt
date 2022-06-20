@@ -4,7 +4,6 @@ list(APPEND Sources "main.cpp")
 
 set(SubDirs "")
 list(APPEND SubDirs ".")
-list(APPEND SubDirs "mpu6050")
 list(APPEND SubDirs "Recorder")
 list(APPEND SubDirs "System")
 list(APPEND SubDirs "UserInterface")

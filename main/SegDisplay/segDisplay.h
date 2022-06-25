@@ -5,10 +5,20 @@
 
 #pragma once
 
-// Singleton class
+// Utility functions and enums
+
+typedef enum {
+	LSBFIRST = 0,
+	LSBLAST
+} bitOrder_t;
+
+// todo: move utility functions in a universally accessible header.
+uint8_t shiftIn(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder);
+void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val);
+
+	// Singleton class
 class segDisplay {
 	segDisplay * instance = nullptr;
-	
 
 	segDisplay();
 	~segDisplay();

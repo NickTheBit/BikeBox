@@ -5,8 +5,10 @@
 
 #pragma once
 
-// Utility functions and enums
+#include <cstdint>
+#include <driver/gpio.h>
 
+// Utility functions and enums
 typedef enum {
 	LSBFIRST = 0,
 	LSBLAST
@@ -16,14 +18,41 @@ typedef enum {
 uint8_t shiftIn(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder);
 void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val);
 
-	// Singleton class
+// Pin definitions for 7 segment
+#define SR_OUTPUT_ENABLE_PIN    26
+#define SR_CLEAR_PIN            25
+#define SR_SER_PIN              27
+#define SR_CLK_PIN              33
+//todo: Move pin configuration to menuconfig.
+
+// Seven segment configuration enumerations
+typedef enum {
+	ZERO = 0,
+	ONE,
+	TWO,
+	TRHEE,
+	FOUR,
+	FIVE,
+	SIX,
+	SEVEN,
+	EIGHT,
+	NINE,
+	NAN
+} sevSegDigit_t;
+
+// Singleton class
 class segDisplay {
-	segDisplay * instance = nullptr;
+	static segDisplay * instance;
+	sevSegDigit_t displayedValue = NAN;
 
 	segDisplay();
 	~segDisplay();
 
   public:
-	segDisplay * getInstance(void);
+	static segDisplay * getInstance();
+	bool setDigit(sevSegDigit_t);
+	sevSegDigit_t getDigit();
+	bool enableDisplay();
+	bool disableDisplay();
 
 };

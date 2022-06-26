@@ -1,11 +1,11 @@
 /* Author: NickTheBit
-* Brief : Class manages and controls the 7 segment display
-* designed to operate through a shift register.
+*  Brief : Class manages and controls the 7 segment display
+*  designed to operate through a shift register.
 */
 
-#include <cstdint>
-#include <driver/gpio.h>
 #include "segDisplay.h"
+
+segDisplay * segDisplay::instance = nullptr;
 
 /*
  * Gradually reads data from pin and shoves it in an 8 bit value
@@ -49,7 +49,11 @@ void shiftOut(uint8_t dataPin, uint8_t clockPin, bitOrder_t bitOrder, uint8_t va
 }
 
 segDisplay::segDisplay() {
-	// TODO: Search an spi channel for a shift register and connect to it
+	// Setting assigned pins to output
+	gpio_set_direction((gpio_num_t)SR_SER_PIN, GPIO_MODE_OUTPUT);
+	gpio_set_direction((gpio_num_t)SR_CLK_PIN, GPIO_MODE_OUTPUT);
+	gpio_set_direction((gpio_num_t)SR_OUTPUT_ENABLE_PIN, GPIO_MODE_OUTPUT);
+	gpio_set_direction((gpio_num_t)SR_CLEAR_PIN, GPIO_MODE_OUTPUT);
 }
 
 segDisplay * segDisplay::getInstance() {
@@ -59,6 +63,37 @@ segDisplay * segDisplay::getInstance() {
 	return instance;
 }
 
+/* Sets the digit to be displayed by the display returns true if it succeeds. */
+bool segDisplay::setDigit(sevSegDigit_t digit) {
+	displayedValue = digit;
+	// todo: Add logic for digit switching.
+	return true;
+}
+
+sevSegDigit_t segDisplay::getDigit() {
+	return displayedValue;
+}
+
+bool segDisplay::enableDisplay() {
+	esp_err_t error = gpio_set_level((gpio_num_t) SR_OUTPUT_ENABLE_PIN, 1);
+	if (error == ESP_OK) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool segDisplay::disableDisplay() {
+	esp_err_t error = gpio_set_level((gpio_num_t) SR_OUTPUT_ENABLE_PIN, 0);
+	if (error == ESP_OK) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+
 segDisplay::~segDisplay() {
+	setDigit(NAN);
 	// TODO: Deallocate resources if needed, remove deconstructor if not needed.
 }

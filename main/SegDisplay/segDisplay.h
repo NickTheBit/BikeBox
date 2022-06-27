@@ -7,6 +7,8 @@
 
 #include <cstdint>
 #include <driver/gpio.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
 // Utility functions and enums
 typedef enum {
@@ -23,6 +25,7 @@ void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val);
 #define SR_CLEAR_PIN            25
 #define SR_SER_PIN              27
 #define SR_CLK_PIN              33
+#define SR_REGISTER_PIN         32
 //todo: Move pin configuration to menuconfig.
 
 // Seven segment configuration enumerations

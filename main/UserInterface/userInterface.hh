@@ -2,5 +2,6 @@
  * Author: Nick Gkloumpos
 */
 #pragma once
+#include "segDisplay.h"
 
-extern "C" void UITask(void *);
+extern "C" [[noreturn]] void UITask(void *);

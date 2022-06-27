@@ -32,7 +32,7 @@ uint8_t shiftIn(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder) {
 
 /* Gradually writes data to a pin and shoves it in an 8 bit value
  * Assumes all pin-modes are set properly, manhandles the clock */
-void shiftOut(uint8_t dataPin, uint8_t clockPin, bitOrder_t bitOrder, uint8_t val) {
+void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val) {
 	for (uint8_t i = 0; i < 8; i++)  {
 		if (bitOrder == LSBFIRST) {
 			gpio_set_level((gpio_num_t) dataPin, val & 1);
@@ -45,6 +45,13 @@ void shiftOut(uint8_t dataPin, uint8_t clockPin, bitOrder_t bitOrder, uint8_t va
 		// Advancing the clock
 		gpio_set_level((gpio_num_t) clockPin, 1);
 		gpio_set_level((gpio_num_t) clockPin, 0);
+	}
+
+	// Flushing to main registers
+	for (uint8_t i=0; i<9; i++) {
+		gpio_set_level((gpio_num_t) SR_REGISTER_PIN, 1);
+		vTaskDelay(5);
+		gpio_set_level((gpio_num_t) SR_REGISTER_PIN, 0);
 	}
 }
 
@@ -66,7 +73,45 @@ segDisplay * segDisplay::getInstance() {
 /* Sets the digit to be displayed by the display returns true if it succeeds. */
 bool segDisplay::setDigit(sevSegDigit_t digit) {
 	displayedValue = digit;
-	// todo: Add logic for digit switching.
+
+	gpio_set_level((gpio_num_t) SR_CLEAR_PIN, 1);
+
+	switch (displayedValue) {
+	case ZERO:
+		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b10000000);
+		break;
+	case ONE:
+		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b11010111);
+		break;
+	case TWO:
+		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b01100000);
+		break;
+	case TRHEE:
+		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b01000100);
+		break;
+	case FOUR:
+		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b00010110);
+		break;
+	case FIVE:
+		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b00001100);
+		break;
+	case SIX:
+		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b00001000);
+		break;
+	case SEVEN:
+		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b11000111);
+		break;
+	case EIGHT:
+		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b00000000);
+		break;
+	case NINE:
+		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b00000100);
+		break;
+	default:
+		// Do nothing
+		break;
+	}
+
 	return true;
 }
 
@@ -91,7 +136,6 @@ bool segDisplay::disableDisplay() {
 		return false;
 	}
 }
-
 
 segDisplay::~segDisplay() {
 	setDigit(NAN);

@@ -48,11 +48,8 @@ void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val) 
 	}
 
 	// Flushing to main registers
-	for (uint8_t i=0; i<9; i++) {
-		gpio_set_level((gpio_num_t) SR_REGISTER_PIN, 1);
-		vTaskDelay(5);
-		gpio_set_level((gpio_num_t) SR_REGISTER_PIN, 0);
-	}
+	gpio_set_level((gpio_num_t) SR_REGISTER_PIN, 1);
+	gpio_set_level((gpio_num_t) SR_REGISTER_PIN, 0);
 }
 
 segDisplay::segDisplay() {
@@ -111,7 +108,6 @@ bool segDisplay::setDigit(sevSegDigit_t digit) {
 		// Do nothing
 		break;
 	}
-
 	return true;
 }
 
@@ -120,7 +116,7 @@ sevSegDigit_t segDisplay::getDigit() {
 }
 
 bool segDisplay::enableDisplay() {
-	esp_err_t error = gpio_set_level((gpio_num_t) SR_OUTPUT_ENABLE_PIN, 1);
+	esp_err_t error = gpio_set_level((gpio_num_t) SR_OUTPUT_ENABLE_PIN, 0);
 	if (error == ESP_OK) {
 		return true;
 	} else {
@@ -129,7 +125,7 @@ bool segDisplay::enableDisplay() {
 }
 
 bool segDisplay::disableDisplay() {
-	esp_err_t error = gpio_set_level((gpio_num_t) SR_OUTPUT_ENABLE_PIN, 0);
+	esp_err_t error = gpio_set_level((gpio_num_t) SR_OUTPUT_ENABLE_PIN, 1);
 	if (error == ESP_OK) {
 		return true;
 	} else {

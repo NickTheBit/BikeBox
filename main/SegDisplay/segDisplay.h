@@ -28,6 +28,18 @@ void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val);
 #define SR_REGISTER_PIN         32
 //todo: Move pin configuration to menuconfig.
 
+// Segment enumeration
+typedef enum {
+	seg_a = 0x80,
+	seg_b = 0x40,
+	seg_c = 0x20,
+	seg_d = 0x10,
+	seg_e = 0x08,
+	seg_f = 0x04,
+	seg_g = 0x02,
+	seg_n = 0x01
+} segments_t;
+
 // Seven segment configuration enumerations
 typedef enum {
 	ZERO = 0,

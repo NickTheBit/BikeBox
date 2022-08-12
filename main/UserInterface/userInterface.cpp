@@ -19,10 +19,12 @@ extern "C" void UITask(void * parameter) {
 
     // User Interface main loop
     while (1) {
+		segDisplay::getInstance()->enableDisplay();
 		for (uint8_t i = 0; i < 10; i++) {
 			segDisplay::getInstance()->setDigit((sevSegDigit_t)i);
-			vTaskDelay(250 / portTICK_PERIOD_MS);
+			vTaskDelay(300 / portTICK_PERIOD_MS);
 		}
+		segDisplay::getInstance()->disableDisplay();
 		vTaskDelay(500 / portTICK_PERIOD_MS);
     } // while
 }

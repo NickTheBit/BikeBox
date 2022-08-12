@@ -3,6 +3,7 @@
 *  designed to operate through a shift register.
 */
 
+#include <esp_log.h>
 #include "segDisplay.h"
 
 segDisplay * segDisplay::instance = nullptr;
@@ -32,8 +33,8 @@ uint8_t shiftIn(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder) {
 
 /* Gradually writes data to a pin and shoves it in an 8 bit value
  * Assumes all pin-modes are set properly, manhandles the clock */
-void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val) {
-	for (uint8_t i = 0; i < 8; i++)  {
+void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val, uint8_t valSize) {
+	for (uint8_t i = 0; i < valSize; i++)  {
 		if (bitOrder == LSBFIRST) {
 			gpio_set_level((gpio_num_t) dataPin, val & 1);
 			val >>= 1;
@@ -71,43 +72,50 @@ segDisplay * segDisplay::getInstance() {
 bool segDisplay::setDigit(sevSegDigit_t digit) {
 	displayedValue = digit;
 
+	/* todo: check if clearing the register is needed */
+	gpio_set_level((gpio_num_t) SR_CLEAR_PIN, 0);
 	gpio_set_level((gpio_num_t) SR_CLEAR_PIN, 1);
+
+	/* todo: Improve flexibility by allowing normally off or on displays */
+	uint8_t segmentConfiguration = 0;
 
 	switch (displayedValue) {
 	case ZERO:
-		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b10000000);
+		segmentConfiguration = (seg_a | seg_b | seg_c | seg_e | seg_f | seg_g);
 		break;
 	case ONE:
-		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b11010111);
+		segmentConfiguration = (seg_c | seg_f);
 		break;
 	case TWO:
-		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b01100000);
+		segmentConfiguration = (seg_a | seg_c | seg_d | seg_e | seg_g);
 		break;
 	case TRHEE:
-		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b01000100);
+		segmentConfiguration = (seg_a | seg_c | seg_d | seg_f | seg_g);
 		break;
 	case FOUR:
-		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b00010110);
+		segmentConfiguration = (seg_b | seg_d | seg_c | seg_f);
 		break;
 	case FIVE:
-		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b00001100);
+		segmentConfiguration = (seg_a | seg_b | seg_d | seg_f | seg_g);
 		break;
 	case SIX:
-		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b00001000);
+		segmentConfiguration = (seg_a | seg_b | seg_d | seg_e | seg_f | seg_g);
 		break;
 	case SEVEN:
-		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b11000111);
+		segmentConfiguration = (seg_a | seg_c | seg_f);
 		break;
 	case EIGHT:
-		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b00000000);
+		segmentConfiguration = (seg_a | seg_b | seg_c | seg_d | seg_e | seg_f | seg_g);
 		break;
 	case NINE:
-		shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, 0b00000100);
+		segmentConfiguration = (seg_a | seg_b | seg_c | seg_d | seg_f | seg_g);
 		break;
 	default:
 		// Do nothing
 		break;
 	}
+
+	shiftOut(SR_SER_PIN, SR_CLK_PIN, 0, segmentConfiguration, 8);
 	return true;
 }
 

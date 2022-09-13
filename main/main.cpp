@@ -1,12 +1,13 @@
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
-#include <esp_log.h>
-#include <esp_spi_flash.h>
-#include <esp_chip_info.h>
-
+#include "Recorder/recorder.hh"
 #include "System/system.hh"
 #include "UserInterface/userInterface.hh"
-#include "Recorder/recorder.hh"
+
+#include <esp_chip_info.h>
+#include <esp_flash.h>
+#include <esp_log.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <spi_flash_mmap.h>
 
 static const char* TAG_Main = "Main";
 
@@ -29,9 +30,13 @@ extern "C" void app_main(void) {
 			(chip_info.features & CHIP_FEATURE_BLE) ? "/BLE" : "");
 
 	ESP_LOGI(TAG_Main,"silicon revision %d, ", chip_info.revision);
-	ESP_LOGI(TAG_Main,"%dMB %s flash", spi_flash_get_chip_size() / (1024 * 1024),
+
+	uint32_t size_flash_chip;
+	esp_flash_get_size(NULL, &size_flash_chip);
+
+	ESP_LOGI(TAG_Main,"%dMB %s flash", (int) size_flash_chip / (1024 * 1024),
 	       (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
-	ESP_LOGI(TAG_Main,"Minimum free heap size: %d bytes", esp_get_minimum_free_heap_size());
+	ESP_LOGI(TAG_Main,"Minimum free heap size: %u bytes", (unsigned int) esp_get_minimum_free_heap_size());
 
 
     xTaskCreate( systemTask, "System", 2048, nullptr, tskIDLE_PRIORITY , nullptr);

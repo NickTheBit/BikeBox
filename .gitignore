@@ -3,3 +3,4 @@ build/
 .idea/
 sdkconfig.old
 .swp
+cmake-build-debug/
